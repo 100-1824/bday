@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday {{ name }}!</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Ambient Background Elements -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="noise-overlay"></div>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="hero-content">
+            <h1 class="fade-in">Happy Birthday, <br><span class="highlight">{{ name }}</span></h1>
+            <p class="subtitle fade-in-delay">Distance means so little when you mean so much.</p>
+            <div id="countdown" class="fade-in-delay-2">
+                <!-- Countdown JS will populate this -->
+            </div>
+        </div>
+        <canvas id="petals-canvas"></canvas>
+    </section>
+
+    <!-- Connection Map Section -->
+    <section id="connection-map" class="container">
+        <h2 class="section-title">Connected by Love</h2>
+        <div id="map"></div>
+        <p class="distance-text">From {{ my_city }} to {{ her_city }}, my heart is always with you.</p>
+    </section>
+
+    <!-- Reasons I Love You Generator -->
+    <section id="reasons-generator" class="container">
+        <h2 class="section-title">Why I Love You</h2>
+        <div class="heart-container">
+            <button id="heart-btn" aria-label="Click for a reason">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                        fill="currentColor" />
+                </svg>
+            </button>
+            <div id="reason-display" class="reason-text">Click the heart...</div>
+        </div>
+    </section>
+
+    <!-- Photo Gallery -->
+    <section id="gallery" class="container">
+        <h2 class="section-title">Our Memories</h2>
+        <div class="gallery-grid">
+            <!-- Placeholders for now -->
+            <div class="gallery-item">
+                <div class="placeholder-img">Photo 1</div>
+            </div>
+            <div class="gallery-item">
+                <div class="placeholder-img">Photo 2</div>
+            </div>
+            <div class="gallery-item">
+                <div class="placeholder-img">Photo 3</div>
+            </div>
+            <div class="gallery-item">
+                <div class="placeholder-img">Photo 4</div>
+            </div>
+            <div class="gallery-item">
+                <div class="placeholder-img">Photo 5</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Music Player -->
+    <div id="music-player">
+        <button id="music-toggle">🎵 Play Music</button>
+        <audio id="bg-music" loop>
+            <!-- User to provide music file later -->
+            <source src="" type="audio/mp3">
+        </audio>
+    </div>
+
+    <footer>
+        <p>Made with 💜 for you.</p>
+    </footer>
+
+    <!-- Pass Python variables to JS -->
+    <script>
+        const MY_COORDS = {{ my_coords | tojson }};
+        const HER_COORDS = {{ her_coords | tojson }};
+        const REASONS = {{ reasons | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,304 @@
+:root {
+    --lavender-dark: #5c3a93;
+    --lavender-primary: #8e7cc3;
+    --lavender-glow: #d6b4fc;
+    --white: #ffffff;
+    --glass: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --font-script: 'Great Vibes', cursive;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Quicksand', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    background-color: #f3e6ff;
+    color: var(--lavender-dark);
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Ambient Background */
+.ambient-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.6;
+    animation: floatOrb 20s infinite alternate;
+}
+
+.orb-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #e0c3fc, transparent);
+    top: -10%;
+    left: -10%;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #bde0fe, transparent);
+    bottom: -10%;
+    right: -10%;
+    animation-delay: -5s;
+}
+
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+@keyframes floatOrb {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(30px, 50px);
+    }
+}
+
+h1.highlight {
+    font-family: var(--font-script);
+    font-weight: 400;
+    font-size: 5rem !important;
+    background: linear-gradient(45deg, #6A4C93, #b28dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(178, 141, 255, 0.3);
+    padding: 0.2em 0;
+    /* prevent clip */
+}
+
+h2.section-title {
+    font-size: 3rem;
+    color: var(--lavender-dark);
+    margin-bottom: 3rem;
+    text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.4);
+}
+
+h2.section-title::after {
+    background: linear-gradient(90deg, transparent, var(--lavender-primary), transparent);
+    height: 2px;
+    width: 150px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+    text-align: center;
+}
+
+/* Hero Section */
+#hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Removed static gradient for orb interaction */
+}
+
+.hero-content {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 4rem;
+    border-radius: 30px;
+    border: 1px solid var(--glass-border);
+    box-shadow:
+        0 8px 32px 0 rgba(31, 38, 135, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    transform-style: preserve-3d;
+}
+
+#petals-canvas {
+    z-index: 0;
+}
+
+.subtitle {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    color: #666;
+    margin-top: 1rem;
+    font-weight: 400;
+}
+
+/* Countdown */
+.timer-box {
+    display: inline-block;
+    margin: 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1rem;
+    border-radius: 10px;
+    min-width: 80px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.timer-box .time {
+    display: block;
+    font-size: 2.5rem;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--lavender-dark);
+}
+
+.timer-box .label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+
+/* Map Section */
+#map {
+    height: 450px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(106, 76, 147, 0.15);
+    border: 8px solid white;
+    filter: saturate(0.8) contrast(1.1);
+    /* Aesthetic filter */
+}
+
+/* Reasons Generator */
+#heart-btn {
+    color: #ff8fa3;
+    /* Softer pink */
+    filter: drop-shadow(0 0 15px rgba(255, 143, 163, 0.6));
+    transition: all 0.4s ease;
+}
+
+#heart-btn:hover {
+    transform: scale(1.15) rotate(5deg);
+    color: #ff6b81;
+}
+
+.reason-text {
+    font-size: 2.2rem;
+    font-family: var(--font-script);
+    color: var(--lavender-dark);
+    margin-top: 1rem;
+    min-height: 4rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Gallery - Polaroid Style */
+.gallery-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.gallery-item {
+    background: white;
+    padding: 1rem 1rem 3rem 1rem;
+    /* Polaroid bottom padding */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform: rotate(0deg);
+    transition: all 0.4s ease;
+    width: 250px;
+    /* Fixed width for polaroids */
+    aspect-ratio: auto;
+    /* Let content dictate height + padding */
+    border-radius: 2px;
+}
+
+.gallery-item:nth-child(odd) {
+    transform: rotate(-3deg);
+}
+
+.gallery-item:nth-child(even) {
+    transform: rotate(2deg);
+}
+
+.gallery-item:nth-child(3n) {
+    transform: rotate(4deg);
+}
+
+.gallery-item:hover {
+    transform: rotate(0deg) scale(1.1);
+    z-index: 10;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.placeholder-img {
+    background: #f0f0f0;
+    width: 100%;
+    height: 250px;
+    /* Img height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-family: var(--font-heading);
+    font-style: italic;
+    border: 1px solid #ddd;
+}
+
+
+/* Music Player */
+#music-player {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+}
+
+#music-toggle {
+    background: var(--lavender-dark);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(106, 76, 147, 0.3);
+    transition: all 0.3s ease;
+}
+
+#music-toggle:hover {
+    background: var(--lavender-med);
+    transform: translateY(-2px);
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-content {
+        padding: 1.5rem;
+        width: 85%;
+    }
+
+    #map {
+        height: 300px;
+    }
+}
