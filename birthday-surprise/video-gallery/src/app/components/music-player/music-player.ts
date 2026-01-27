@@ -11,7 +11,7 @@ import { MusicService } from '../../services/music.service';
 })
 export class MusicPlayerComponent implements AfterViewInit {
     @ViewChild('audioPlayer') audioPlayerRef!: ElementRef<HTMLAudioElement>;
-    private musicService = inject(MusicService);
+    protected musicService = inject(MusicService);
 
     isPlaying = false;
     isMinimized = false;

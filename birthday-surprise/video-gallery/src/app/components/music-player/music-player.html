@@ -1,3 +1,4 @@
+@if (musicService.showPlayer$()) {
 <div class="music-container">
     <!-- Main Player Card -->
     <div class="music-player" [class.minimized]="isMinimized">
@@ -29,6 +30,7 @@
         {{ isMinimized ? '🎵' : '✖' }}
     </button>
 </div>
+}
 
 <!-- Audio Element -->
 <audio #audioPlayer [src]="musicSource" loop></audio>
