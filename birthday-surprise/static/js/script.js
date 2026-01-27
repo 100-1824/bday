@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- 1. COUNTDOWN TIMER ---
     const countdownEl = document.getElementById('countdown');
     const targetDate = new Date();
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     }
-    
+
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
@@ -93,8 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
         iconAnchor: [7, 7]
     });
 
-    const marker1 = L.marker(MY_COORDS, {icon: heartIcon}).addTo(map);
-    const marker2 = L.marker(HER_COORDS, {icon: heartIcon}).addTo(map);
+    const marker1 = L.marker(MY_COORDS, { icon: heartIcon }).addTo(map);
+    const marker2 = L.marker(HER_COORDS, { icon: heartIcon }).addTo(map);
 
     // Draw Line
     const latlngs = [MY_COORDS, HER_COORDS];
@@ -102,38 +102,56 @@ document.addEventListener('DOMContentLoaded', () => {
         color: '#9CA3DB',
         weight: 3,
         opacity: 0.7,
-        dashArray: '10, 10', 
+        dashArray: '10, 10',
         lineCap: 'round'
     }).addTo(map);
 
     // Fit map to show both points with padding
-    map.fitBounds(polyline.getBounds(), {padding: [50, 50]});
+    map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
 
 
     // --- 4. REASONS GENERATOR ---
     // REASONS is global var from HTML
     const reasonsBtn = document.getElementById('heart-btn');
-    const reasonDisplay = document.getElementById('reason-display');
-    
+    const reasonText = document.getElementById('reason-text');
+    const reasonImage = document.getElementById('reason-image');
+
     // Animation trigger
     reasonsBtn.addEventListener('click', () => {
         // Animate button
-        gsap.fromTo(reasonsBtn, {scale: 0.8}, {scale: 1, duration: 0.5, ease: "elastic.out(1, 0.3)"});
+        gsap.fromTo(reasonsBtn, { scale: 0.8 }, { scale: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" });
 
-        // Fade out text
-        gsap.to(reasonDisplay, {opacity: 0, duration: 0.2, onComplete: () => {
-            // Pick random reason
-            const randomReason = REASONS[Math.floor(Math.random() * REASONS.length)];
-            reasonDisplay.innerText = randomReason;
-            // Fade in text
-            gsap.to(reasonDisplay, {opacity: 1, duration: 0.5});
-        }});
-        
+        // Fade out text container
+        gsap.to(reasonDisplay, {
+            opacity: 0, duration: 0.2, onComplete: () => {
+                // Pick random reason
+                const note = REASONS[Math.floor(Math.random() * REASONS.length)];
+
+                // Handle simple string or object
+                if (typeof note === 'object' && note !== null) {
+                    reasonText.innerText = note.text;
+                    if (note.image) {
+                        reasonImage.src = "/static/images/" + note.image;
+                        reasonImage.style.display = "block";
+                    } else {
+                        reasonImage.style.display = "none";
+                    }
+                } else {
+                    // Fallback for string-only notes
+                    reasonText.innerText = note;
+                    reasonImage.style.display = "none";
+                }
+
+                // Fade in text container
+                gsap.to(reasonDisplay, { opacity: 1, duration: 0.5 });
+            }
+        });
+
         // Burst of confetti on the heart
         const rect = reasonsBtn.getBoundingClientRect();
         const x = (rect.left + rect.width / 2) / window.innerWidth;
         const y = (rect.top + rect.height / 2) / window.innerHeight;
-        
+
         confetti({
             particleCount: 30,
             spread: 60,
@@ -143,6 +161,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+
+
+    // --- 4.5. LETTER ENVELOPE INTERACTION ---
+    const envelope = document.getElementById('envelope');
+    const letterOverlay = document.getElementById('letter-overlay');
+    const closeLetterBtn = document.getElementById('close-letter');
+
+    if (envelope && letterOverlay) {
+        envelope.addEventListener('click', () => {
+            // 1. Animate Open
+            envelope.classList.add('open');
+
+            // 2. Wait for animation then show overlay
+            setTimeout(() => {
+                letterOverlay.classList.add('active');
+
+                // Fire confetti!
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#E0C3FC', '#FFD700', '#FF69B4']
+                });
+            }, 1200); // 1.2s delay for flap + slide up
+        });
+
+        closeLetterBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent bubbling
+            letterOverlay.classList.remove('active');
+            // Close envelope after a delay so it's ready to open again
+            setTimeout(() => {
+                envelope.classList.remove('open');
+            }, 500);
+        });
+
+        // Close on clicking outside the paper
+        letterOverlay.addEventListener('click', (e) => {
+            if (e.target === letterOverlay) {
+                letterOverlay.classList.remove('active');
+                setTimeout(() => {
+                    envelope.classList.remove('open');
+                }, 500);
+            }
+        });
+    }
 
     // --- 5. MUSIC PLAYER ---
     const musicBtn = document.getElementById('music-toggle');

@@ -1,0 +1,124 @@
+/* Global Romantic Birthday Theme */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@300;400;500;700&display=swap');
+
+:root {
+    /* Enhanced Lavender Color Palette */
+    --lavender-light: #F3E5F5;
+    /* Keep background light but tinted */
+    --lavender: #D1C4E9;
+    /* Slightly deeper lavender */
+    --lavender-medium: #B39DDB;
+    /* Richer medium purple */
+    --lavender-dark: #7E57C2;
+    /* Deep soft purple */
+    --purple-deep: #512DA8;
+    /* Royal purple for strong accents */
+    --pink-soft: #F48FB1;
+    /* Keeping pink but softer */
+    --pink-accent: #EC407A;
+    --gold-accent: #FFD54F;
+    --cream: #FFFDE7;
+    --text-dark: #4527A0;
+    /* Dark purple text instead of grey */
+    --text-light: #7E57C2;
+
+    /* Gradients */
+    --romantic-gradient: linear-gradient(135deg, #AB47BC 0%, #7E57C2 100%);
+    --lavender-gradient: linear-gradient(135deg, #D1C4E9 0%, #9575CD 100%);
+    --sunset-gradient: linear-gradient(135deg, #BA68C8 0%, #F06292 100%);
+    --soft-gradient: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    font-family: 'Quicksand', sans-serif;
+    color: var(--text-dark);
+    background: var(--lavender-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Floating Hearts Animation */
+@keyframes float-up {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(156, 39, 176, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(156, 39, 176, 0.6);
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--lavender-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--lavender-medium);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--lavender-dark);
+}
+
+/* Selection Color */
+::selection {
+    background: var(--lavender-medium);
+    color: white;
+}

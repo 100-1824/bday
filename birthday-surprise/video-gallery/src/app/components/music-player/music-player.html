@@ -1,0 +1,34 @@
+<div class="music-container">
+    <!-- Main Player Card -->
+    <div class="music-player" [class.minimized]="isMinimized">
+        <div class="disk-wrapper" [class.playing]="isPlaying">
+            <div class="disk-center"></div>
+        </div>
+
+        <div class="song-info">
+            <span class="song-title">Until I Found You</span>
+            <span class="song-artist">Stephen Sanchez</span>
+        </div>
+
+        <div class="controls">
+            <!-- <button class="control-btn" (click)="prevSong()">⏮</button> -->
+            <button class="control-btn play-pause" (click)="togglePlay()">
+                {{ isPlaying ? '⏸' : '▶' }}
+            </button>
+            <div class="equalizer" *ngIf="isPlaying">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <!-- <button class="control-btn" (click)="nextSong()">⏭</button> -->
+        </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button class="music-toggle" (click)="toggleMinimize()" [title]="isMinimized ? 'Show Player' : 'Hide Player'">
+        {{ isMinimized ? '🎵' : '✖' }}
+    </button>
+</div>
+
+<!-- Audio Element -->
+<audio #audioPlayer [src]="musicSource" loop></audio>

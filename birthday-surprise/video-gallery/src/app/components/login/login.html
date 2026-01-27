@@ -1,0 +1,46 @@
+<div class="login-container">
+    <!-- Floating Hearts -->
+    <div class="heart-float" style="left: 5%; animation-delay: 0s;">💜</div>
+    <div class="heart-float" style="left: 15%; animation-delay: 1s;">💕</div>
+    <div class="heart-float" style="left: 25%; animation-delay: 2s;">💗</div>
+    <div class="heart-float" style="left: 35%; animation-delay: 3s;">💜</div>
+    <div class="heart-float" style="left: 45%; animation-delay: 4s;">💕</div>
+    <div class="heart-float" style="left: 55%; animation-delay: 5s;">💗</div>
+    <div class="heart-float" style="left: 65%; animation-delay: 6s;">💜</div>
+    <div class="heart-float" style="left: 75%; animation-delay: 7s;">💕</div>
+    <div class="heart-float" style="left: 85%; animation-delay: 8s;">💗</div>
+    <div class="heart-float" style="left: 95%; animation-delay: 9s;">💜</div>
+
+    <div class="login-card">
+        <h1 *ngIf="timerEnded">Happy Birthday! 🎂</h1>
+        <p class="subtitle" *ngIf="!timerEnded">Something special awaits...</p>
+
+        <!-- Countdown -->
+        <div class="countdown">
+            <div class="timer-box">
+                <span class="time">{{ days }}</span>
+                <span class="label">Days</span>
+            </div>
+            <div class="timer-box">
+                <span class="time">{{ hours }}</span>
+                <span class="label">Hours</span>
+            </div>
+            <div class="timer-box">
+                <span class="time">{{ minutes }}</span>
+                <span class="label">Min</span>
+            </div>
+            <div class="timer-box">
+                <span class="time">{{ seconds }}</span>
+                <span class="label">Sec</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input type="password" [(ngModel)]="password" (keyup.enter)="login()" placeholder="🔐 Secret Password">
+        </div>
+
+        <p class="error" *ngIf="error">{{ error }}</p>
+
+        <button (click)="login()">💖 Enter 💖</button>
+    </div>
+</div>

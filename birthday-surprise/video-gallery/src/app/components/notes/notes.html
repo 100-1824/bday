@@ -1,0 +1,69 @@
+<div class="notes-container">
+    <a routerLink="/home" class="back-link">← Back to Home</a>
+
+    <h1>Our Journal 💜</h1>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+        <button *ngFor="let cat of categories" [class.active]="activeCategory === cat.id" (click)="setCategory(cat.id)"
+            class="category-tab">
+            <span class="cat-emoji">{{ cat.emoji }}</span>
+            <span class="cat-name">{{ cat.name }}</span>
+            <span class="cat-count">({{ getCategoryCount(cat.id) }})</span>
+        </button>
+    </div>
+
+    <!-- Add Note Button -->
+    <div class="add-note-section">
+        <button class="add-note-btn" (click)="toggleForm()" *ngIf="!showForm">
+            ✏️ Write a New Note
+        </button>
+    </div>
+
+    <!-- New Note Form -->
+    <div class="new-note-form" *ngIf="showForm">
+        <h3>Write a Love Note 💕</h3>
+        <input type="text" [(ngModel)]="newNote.title" placeholder="Title (optional)" class="note-title-input">
+        <textarea [(ngModel)]="newNote.text" placeholder="Write your thoughts here..." class="note-text-input"
+            rows="6"></textarea>
+        <div class="category-select">
+            <label>Category:</label>
+            <select [(ngModel)]="newNote.category">
+                <option value="notes">📝 Notes</option>
+                <option value="letters">💌 Letters</option>
+                <option value="poems">🖇️ Poems</option>
+                <option value="reasons">❤️‍🩹 Reasons</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button class="cancel-btn" (click)="toggleForm()">Cancel</button>
+            <button class="save-btn" (click)="saveNote()" [disabled]="isSaving || !newNote.text.trim()">
+                {{ isSaving ? 'Saving...' : '💜 Save Note' }}
+            </button>
+        </div>
+    </div>
+
+    <div class="loading" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Loading notes...</p>
+    </div>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div class="masonry-grid" *ngIf="!isLoading && !error">
+        <div class="note-card" *ngFor="let note of filteredNotes" [class.user-note]="note.isUserNote">
+            <span class="user-badge" *ngIf="note.isUserNote">✨ New</span>
+            <span class="category-badge" *ngIf="note.category && note.category !== 'all'">
+                {{ note.category === 'letters' ? '💌' : note.category === 'poems' ? '🖇️' : note.category === 'reasons'
+                ? '❤️‍🩹' : '📝' }}
+            </span>
+            <h3 *ngIf="note.title">{{ note.title }}</h3>
+            <div class="note-text">{{ note.text }}</div>
+            <img *ngIf="note.image" [src]="'/api/note-image/' + note.image" class="note-image" loading="lazy">
+            <div class="note-date">{{ note.created / 1000 | date:'mediumDate' }}</div>
+        </div>
+        <p *ngIf="filteredNotes.length === 0" class="empty-state">
+            No {{ activeCategory === 'all' ? 'notes' : activeCategory }} yet... 💜
+        </p>
+    </div>
+</div>

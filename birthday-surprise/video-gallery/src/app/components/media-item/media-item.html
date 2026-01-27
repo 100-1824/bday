@@ -1,0 +1,6 @@
+<div class="video-container" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+    <video #videoPlayer [src]="videoUrl" loop muted playsinline></video>
+    <div class="overlay" *ngIf="!isPlaying">
+        <span class="play-icon">▶</span>
+    </div>
+</div>

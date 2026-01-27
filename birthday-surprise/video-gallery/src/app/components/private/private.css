@@ -1,0 +1,325 @@
+.private-container {
+    min-height: 100vh;
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(rgba(26, 26, 46, 0.85), rgba(15, 52, 96, 0.9)), url('/static/images/private-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.back-link {
+    display: inline-block;
+    padding: 1.5rem;
+    color: #e94560;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+.back-link:hover {
+    color: #ff6b81;
+}
+
+/* Lock Screen */
+.lock-screen {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.lock-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    padding: 3rem 2.5rem;
+    border-radius: 25px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    border: 1px solid rgba(233, 69, 96, 0.3);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.lock-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.lock-card h1 {
+    font-family: 'Great Vibes', cursive;
+    color: #e94560;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.lock-card p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 2rem;
+}
+
+.password-form input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid rgba(233, 69, 96, 0.3);
+    border-radius: 50px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: 'Quicksand', sans-serif;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.password-form input:focus {
+    outline: none;
+    border-color: #e94560;
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.3);
+}
+
+.password-form input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.password-form button {
+    background: linear-gradient(135deg, #e94560 0%, #ff6b81 100%);
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Quicksand', sans-serif;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+}
+
+.password-form button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(233, 69, 96, 0.5);
+}
+
+.password-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.error {
+    color: #ff6b81;
+    margin-bottom: 1rem;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-10px);
+    }
+
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+/* Gallery Content */
+.gallery-content {
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.gallery-content header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.gallery-content header h1 {
+    font-family: 'Great Vibes', cursive;
+    color: #e94560;
+    font-size: 3rem;
+    text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+}
+
+.gallery-content header p {
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+}
+
+.lock-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(233, 69, 96, 0.2);
+    border: 1px solid #e94560;
+    color: #e94560;
+    padding: 8px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.lock-btn:hover {
+    background: #e94560;
+    color: white;
+}
+
+/* Media Grid */
+.media-grid {
+    columns: 4;
+    column-gap: 15px;
+}
+
+.photo-item,
+.video-item {
+    margin-bottom: 15px;
+    break-inside: avoid;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s;
+    border: 2px solid rgba(233, 69, 96, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+}
+
+.photo-item:hover {
+    transform: scale(1.03);
+    border-color: #e94560;
+    box-shadow: 0 20px 50px rgba(233, 69, 96, 0.3);
+}
+
+.photo-item img,
+.video-item video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    gap: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(233, 69, 96, 0.3);
+    border-top: 4px solid #e94560;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: rgba(255, 255, 255, 0.5);
+    grid-column: 1 / -1;
+}
+
+.empty-state code {
+    background: rgba(233, 69, 96, 0.2);
+    padding: 4px 10px;
+    border-radius: 5px;
+    color: #e94560;
+}
+
+/* Lightbox */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.lightbox.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(233, 69, 96, 0.3);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 3rem;
+    color: #e94560;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.lightbox-close:hover {
+    transform: rotate(90deg);
+}
+
+/* Mobile */
+@media (max-width: 1024px) {
+    .media-grid {
+        columns: 3;
+    }
+}
+
+@media (max-width: 768px) {
+    .media-grid {
+        columns: 2;
+        column-gap: 10px;
+    }
+
+    .gallery-content header h1 {
+        font-size: 2.2rem;
+    }
+
+    .lock-btn {
+        position: static;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .lock-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .lock-card h1 {
+        font-size: 2rem;
+    }
+}

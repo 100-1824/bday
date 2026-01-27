@@ -1,0 +1,56 @@
+<div class="private-container">
+    <a routerLink="/home" class="back-link">← Back to Home</a>
+
+    <!-- Lock Screen -->
+    <div class="lock-screen" *ngIf="!isUnlocked">
+        <div class="lock-card">
+            <div class="lock-icon">🔐</div>
+            <h1>Private Gallery</h1>
+            <p>Enter password to unlock</p>
+
+            <div class="password-form">
+                <input type="password" [(ngModel)]="password" (keyup.enter)="unlock()" placeholder="Enter password..."
+                    [disabled]="isLoading">
+                <p class="error" *ngIf="error">{{ error }}</p>
+                <button (click)="unlock()" [disabled]="isLoading || !password">
+                    {{ isLoading ? 'Unlocking...' : '🔓 Unlock' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unlocked Gallery -->
+    <div class="gallery-content" *ngIf="isUnlocked">
+        <header>
+            <h1>Private Collection 🔓</h1>
+            <p>For your eyes only</p>
+            <button class="lock-btn" (click)="lock()">🔒 Lock</button>
+        </header>
+
+        <div class="loading" *ngIf="isLoading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <div class="media-grid" *ngIf="!isLoading">
+            <div class="photo-item" *ngFor="let img of images" (click)="openLightbox(img)">
+                <img [src]="img" loading="lazy" alt="Private">
+            </div>
+
+            <div class="video-item" *ngFor="let vid of videos">
+                <video [src]="vid" controls></video>
+            </div>
+
+            <p *ngIf="images.length === 0 && videos.length === 0" class="empty-state">
+                No private media yet 🔒<br>
+                <small>Add files to: <code>static/images/private/</code></small>
+            </p>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" [class.active]="lightboxOpen" (click)="closeLightbox()">
+        <span class="lightbox-close">×</span>
+        <img [src]="lightboxImage" *ngIf="lightboxImage">
+    </div>
+</div>

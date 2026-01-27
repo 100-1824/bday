@@ -1,0 +1,56 @@
+<div class="gallery-container">
+    <a routerLink="/home" class="back-link">← Back to Home</a>
+
+    <header>
+        <h1>Our Memories 📸</h1>
+        <p>Moments frozen in time</p>
+    </header>
+
+    <div class="tabs">
+        <button [class.active]="activeTab === 'photos'" (click)="setTab('photos')">📷 Photos
+            ({{images.length}})</button>
+        <button [class.active]="activeTab === 'nails'" (click)="setTab('nails')">💅 Nails ({{nails.length}})</button>
+        <button [class.active]="activeTab === 'videos'" (click)="setTab('videos')">🎬 Videos
+            ({{videos.length}})</button>
+    </div>
+
+    <div class="loading" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Loading memories...</p>
+    </div>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <div *ngIf="!isLoading && !error">
+        <!-- Photos Tab - Masonry Layout -->
+        <div class="media-grid" *ngIf="activeTab === 'photos'">
+            <div class="photo-item" *ngFor="let img of images" (click)="openLightbox(img)">
+                <img [src]="img" loading="lazy" alt="Memory">
+            </div>
+            <p *ngIf="images.length === 0" class="empty-state">No photos found.</p>
+        </div>
+
+        <!-- Nails Tab - Masonry Layout -->
+        <div class="media-grid nails-grid" *ngIf="activeTab === 'nails'">
+            <div class="photo-item nail-item" *ngFor="let img of nails" (click)="openLightbox(img)">
+                <img [src]="img" loading="lazy" alt="Nails">
+            </div>
+            <p *ngIf="nails.length === 0" class="empty-state">
+                No nail photos yet! 💅<br>
+                <small>Move nail images to: <code>static/images/nails/</code></small>
+            </p>
+        </div>
+
+        <!-- Videos Tab - Grid Layout -->
+        <div class="video-grid" *ngIf="activeTab === 'videos'">
+            <app-media-item *ngFor="let vid of videos" [videoUrl]="vid"></app-media-item>
+            <p *ngIf="videos.length === 0" class="empty-state">No videos found.</p>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" [class.active]="lightboxOpen" (click)="closeLightbox()">
+        <span class="lightbox-close">×</span>
+        <img [src]="lightboxImage" *ngIf="lightboxImage">
+    </div>
+</div>

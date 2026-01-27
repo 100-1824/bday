@@ -1,0 +1,129 @@
+<div class="home-container">
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="hero-content">
+            <h1>Happy Birthday, <span class="highlight">{{ herName }}</span></h1>
+            <p class="subtitle">Welcome to your special surprise 💜</p>
+        </div>
+    </section>
+
+    <!-- Reasons I Love You Section -->
+    <section id="reasons" class="container">
+        <h2 class="section-title">Reasons I Love You 💕</h2>
+        <div class="reason-card-container">
+            <button class="nav-btn prev" (click)="prevReason()">‹</button>
+            <div class="reason-card" [class.flipping]="isFlipping">
+                <div class="reason-emoji">{{ currentReason.emoji }}</div>
+                <p class="reason-text">{{ currentReason.text }}</p>
+                <div class="reason-counter">{{ currentReasonIndex + 1 }} / {{ reasons.length }}</div>
+            </div>
+            <button class="nav-btn next" (click)="nextReason()">›</button>
+        </div>
+        <p class="tap-hint">← Tap arrows to see more →</p>
+    </section>
+
+    <!-- Map Section -->
+    <section id="connection-map" class="container">
+        <h2 class="section-title">Connected by Love</h2>
+        <div id="map-wrapper">
+            <div id="map"></div>
+        </div>
+        <p class="distance-text">From my heart to yours, across any distance 💜</p>
+    </section>
+
+    <!-- Letter Section -->
+    <section id="love-letter" class="container">
+        <h2 class="section-title">Special Deliveries 💌</h2>
+
+        <div class="letters-container">
+            <!-- Main Letter Envelope -->
+            <div class="letter-item">
+                <div class="envelope-container" (click)="toggleEnvelope('main')">
+                    <div class="envelope" [class.open]="isEnvelopeOpen && activeLetterType === 'main'">
+                        <div class="flap"></div>
+                        <div class="letter">
+                            <div class="letter-text">Birthday Wish...</div>
+                        </div>
+                        <div class="pocket"></div>
+                    </div>
+                </div>
+                <p class="instruction-text">For My Birthday Girl 💜</p>
+            </div>
+
+            <!-- Handwritten Letter Envelope -->
+            <div class="letter-item">
+                <div class="envelope-container" (click)="toggleEnvelope('handwritten')">
+                    <div class="envelope" [class.open]="isEnvelopeOpen && activeLetterType === 'handwritten'">
+                        <div class="flap" style="border-top-color: #7b1fa2;"></div>
+                        <div class="pocket"
+                            style="border-left-color: #9c27b0; border-right-color: #9c27b0; border-bottom-color: #8e24aa;">
+                        </div>
+                        <div class="letter">
+                            <div class="letter-text">Handwritten...</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="instruction-text">A Handwritten Note 📝</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Letter Overlay with Confetti -->
+    <div class="letter-overlay" [class.active]="showLetterOverlay" (click)="closeLetterOverlay()">
+        <!-- Confetti -->
+        <div class="confetti-container" *ngIf="showLetterOverlay">
+            <div class="confetti" *ngFor="let i of confettiPieces" [style.left.%]="i.left"
+                [style.animation-delay.s]="i.delay" [style.background]="i.color"></div>
+        </div>
+
+        <!-- Sparkles -->
+        <div class="sparkle" *ngFor="let s of sparkles" [style.left.%]="s.left" [style.top.%]="s.top"
+            [style.animation-delay.s]="s.delay">✨</div>
+
+        <div class="paper" (click)="$event.stopPropagation()">
+            <div class="birthday-header">🎂 Happy Birthday! 🎂</div>
+
+            <ng-container *ngIf="activeLetterType === 'main'">
+                <h2>My Beautiful Blessed Suvi,</h2>
+                <p style="white-space: pre-line">{{ letterContent }}</p>
+            </ng-container>
+
+            <ng-container *ngIf="activeLetterType === 'handwritten'">
+                <h2>My Dearest Love,</h2>
+                <p style="white-space: pre-line">{{ handwrittenText }}</p>
+                <div class="hearts-footer">
+                    <button class="view-original-btn" (click)="toggleHandwrittenLetter()">
+                        📜 View Original Letter
+                    </button>
+                </div>
+            </ng-container>
+
+            <div class="hearts-footer">💜💜💜</div>
+            <button class="close-btn" (click)="closeLetterOverlay()">×</button>
+        </div>
+    </div>
+
+    <!-- Handwritten Letter Modal -->
+    <div class="handwritten-modal" *ngIf="showHandwrittenLetter" (click)="toggleHandwrittenLetter()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <img src="assets/letters/handwritten.png" alt="Handwritten Letter" class="handwritten-img">
+            <button class="close-modal-btn" (click)="toggleHandwrittenLetter()">×</button>
+        </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="navigation-links">
+        <a routerLink="/gallery" class="nav-card">
+            <h3>📸 Our Memories</h3>
+            <p>Photos & Videos together</p>
+        </a>
+        <a routerLink="/notes" class="nav-card">
+            <h3>💜 Our Journal</h3>
+            <p>Sweet notes & letters</p>
+        </a>
+        <a routerLink="/private" class="nav-card private-card">
+            <h3>🔐 Private</h3>
+            <p>For your eyes only</p>
+        </a>
+    </div>
+</div>

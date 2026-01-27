@@ -23,6 +23,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/letter.css') }}">
 </head>
 
 <body>
@@ -51,6 +52,33 @@
         <p class="distance-text">From {{ my_city }} to {{ her_city }}, my heart is always with you.</p>
     </section>
 
+    <!-- Special Letter Section -->
+    <section id="special-letter" class="container">
+        <h2 class="section-title">A Special Delivery</h2>
+        <div class="envelope-container">
+            <div class="envelope" id="envelope">
+                <div class="flap"></div>
+                <div class="pocket"></div>
+                <div class="letter">
+                    <div class="letter-text">
+                        <p>My Dearest Love...</p>
+                        <p class="click-hint">(Click to read)</p>
+                    </div>
+                </div>
+            </div>
+            <p class="instruction-text">Tap the envelope to open</p>
+        </div>
+
+        <!-- Fullscreen Letter Overlay -->
+        <div id="letter-overlay" class="letter-overlay">
+            <button id="close-letter" class="close-btn">&times;</button>
+            <div class="paper">
+                <img src="{{ url_for('static', filename='images/letter_from_umair.png') }}" alt="Handwritten Letter"
+                    class="handwritten-img">
+            </div>
+        </div>
+    </section>
+
     <!-- Reasons I Love You Generator -->
     <section id="reasons-generator" class="container">
         <h2 class="section-title">Why I Love You</h2>
@@ -62,7 +90,16 @@
                         fill="currentColor" />
                 </svg>
             </button>
-            <div id="reason-display" class="reason-text">Click the heart...</div>
+            <div id="reason-display" class="reason-container">
+                <div id="reason-text" class="reason-text">Click the heart...</div>
+                <img id="reason-image" class="reason-image" src="" alt="Memory"
+                    style="display: none; max-width: 100%; border-radius: 10px; margin-top: 15px;">
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('notes_page') }}"
+                style="color: #6A4C93; text-decoration: none; font-weight: 500; border-bottom: 2px solid transparent; transition: all 0.3s;">View
+                Full Journal →</a>
         </div>
     </section>
 

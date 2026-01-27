@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Our Memories</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            margin: 0;
+            padding: 40px 20px;
+            color: #4a4a4a;
+        }
+
+        h1 {
+            text-align: center;
+            color: #6A4C93;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            columns: 3 300px;
+            /* Masonry effect */
+            column-gap: 20px;
+        }
+
+        .note-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            break-inside: avoid;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ff6b81;
+            font-size: 1.1rem;
+        }
+
+        .note-text {
+            white-space: pre-wrap;
+            /* Preserve newlines */
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .note-image {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .note-date {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 15px;
+        }
+
+        .back-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #6A4C93;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(106, 76, 147, 0.3);
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                columns: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Our Journal 💜</h1>
+
+    <div class="container">
+        {% for note in notes %}
+        <div class="note-card">
+            {% if note.title %}
+            <div class="note-title">{{ note.title }}</div>
+            {% endif %}
+
+            <div class="note-text">{{ note.text }}</div>
+
+            {% if note.image %}
+            <img src="{{ url_for('serve_note_image', filename=note.image) }}" class="note-image" loading="lazy">
+            {% endif %}
+
+            <!-- Date could be formatted if passed as datetime, currently int timestamp -->
+        </div>
+        {% else %}
+        <p style="text-align:center">No notes found...</p>
+        {% endfor %}
+    </div>
+
+    <a href="{{ url_for('index') }}" class="back-btn">← Home</a>
+</body>
+
+</html>
