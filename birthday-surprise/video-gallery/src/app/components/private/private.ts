@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../../services/api';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -24,7 +24,7 @@ export class PrivateComponent {
     lightboxOpen = false;
     lightboxImage = '';
 
-    constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
+    constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) { }
 
     unlock() {
         if (!this.password) return;
@@ -32,11 +32,15 @@ export class PrivateComponent {
         this.isLoading = true;
         this.error = '';
 
-        this.http.post<{ success: boolean }>('/api/private/verify', { password: this.password }).subscribe({
+        this.apiService.verifyPrivatePassword(this.password).subscribe({
             next: (res) => {
                 if (res.success) {
                     this.isUnlocked = true;
                     this.loadMedia();
+                } else {
+                    this.error = 'Wrong password! 🔒';
+                    this.isLoading = false;
+                    this.cdr.detectChanges();
                 }
             },
             error: () => {
@@ -48,7 +52,7 @@ export class PrivateComponent {
     }
 
     loadMedia() {
-        this.http.post<{ images: string[], videos: string[] }>('/api/private/media', { password: this.password }).subscribe({
+        this.apiService.getPrivateMedia(this.password).subscribe({
             next: (data) => {
                 this.images = data.images || [];
                 this.videos = data.videos || [];

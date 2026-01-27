@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../../services/api';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -42,7 +42,7 @@ export class NotesComponent implements OnInit {
   newNote = { title: '', text: '', category: 'notes' };
   isSaving = false;
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
+  constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.loadNotes();
@@ -50,7 +50,7 @@ export class NotesComponent implements OnInit {
 
   loadNotes() {
     console.log('NotesComponent ngOnInit - fetching notes...');
-    this.http.get<Note[]>('/api/notes').subscribe({
+    this.apiService.getNotes().subscribe({
       next: (data) => {
         console.log('Notes API response:', data);
         this.notes = data || [];
@@ -94,25 +94,7 @@ export class NotesComponent implements OnInit {
   }
 
   saveNote() {
-    if (!this.newNote.text.trim()) {
-      return;
-    }
-
-    this.isSaving = true;
-    this.http.post<Note>('/api/notes', this.newNote).subscribe({
-      next: (savedNote) => {
-        this.notes.unshift(savedNote);
-        this.filterNotes();
-        this.newNote = { title: '', text: '', category: 'notes' };
-        this.showForm = false;
-        this.isSaving = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error saving note', err);
-        this.isSaving = false;
-        this.cdr.detectChanges();
-      }
-    });
+    alert("Note saving is disabled in this static demo version.");
+    this.toggleForm();
   }
 }
