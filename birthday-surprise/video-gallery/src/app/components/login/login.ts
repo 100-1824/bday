@@ -66,7 +66,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   login() {
-    if (this.password.toLowerCase() === 'purplehairbaddie') {
+    if (this.password.toLowerCase() === 'umzyspurplehairbaddie') {
       this.musicService.playMusic();
       this.router.navigate(['/home']);
     } else {
