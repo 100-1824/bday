@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 export interface MediaResponse {
   images: string[];
   videos: string[];
+  nails: string[];
 }
 
 @Injectable({

@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../../services/api';
 import { RouterLink } from '@angular/router';
 import { MediaItemComponent } from '../media-item/media-item';
 
@@ -29,11 +29,11 @@ export class GalleryComponent implements OnInit {
   lightboxOpen = false;
   lightboxImage = '';
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) { }
+  constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-    console.log('GalleryComponent ngOnInit - fetching media...');
-    this.http.get<MediaResponse>('/api/media').subscribe({
+    console.log('GalleryComponent ngOnInit - fetching media with ApiService...');
+    this.apiService.getMedia().subscribe({
       next: (data) => {
         console.log('Gallery API response:', data);
         this.images = data.images || [];
