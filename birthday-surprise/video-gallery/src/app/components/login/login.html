@@ -43,7 +43,7 @@
 
         <button (click)="login()">💖 Enter 💖</button>
 
-        <p class="hint" [class.reveal]="showPassword">
+        <p class="hint" *ngIf="showPassword">
             Password: <strong>umzyspurplehairbaddie</strong>
         </p>
     </div>

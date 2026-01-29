@@ -142,18 +142,30 @@ button:active {
 
 .hint {
     margin-top: 1rem;
-    color: #aaa;
-    font-size: 0.85rem;
-    font-style: italic;
-    transition: all 0.3s;
-}
-
-.hint.reveal {
     color: #6A4C93;
+    font-size: 1rem;
+    font-style: italic;
     background: rgba(225, 190, 231, 0.3);
     padding: 10px 15px;
     border-radius: 10px;
-    animation: pulse 1s infinite;
+    animation: fadeIn 0.5s ease-out, pulse 1s infinite;
+}
+
+.hint strong {
+    color: #9C27B0;
+    font-size: 1.1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .hint.reveal strong {
