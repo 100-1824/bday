@@ -42,5 +42,9 @@
         <p class="error" *ngIf="error">{{ error }}</p>
 
         <button (click)="login()">💖 Enter 💖</button>
+
+        <p class="hint" [class.reveal]="showPassword">
+            Password: <strong>umzyspurplehairbaddie</strong>
+        </p>
     </div>
 </div>
