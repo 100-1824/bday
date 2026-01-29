@@ -1,0 +1,48 @@
+<div class="inspiration-container">
+    <header class="header">
+        <h1>Faith & Vision ✨</h1>
+        <p>A space for your dreams and God's word.</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn" [class.active]="activeTab === 'vision'" (click)="setActiveTab('vision')">
+            🖼️ Vision Boards
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'birthday'" (click)="setActiveTab('birthday')">
+            🎂 Birthday Promises
+        </button>
+    </div>
+
+    <div class="content-area">
+        <!-- Vision Boards Section -->
+        <div class="vision-grid" *ngIf="activeTab === 'vision'">
+            <div class="vision-card" *ngFor="let board of visionBoards"
+                [style.background-color]="board.placeholderColor">
+
+                <img *ngIf="board.image" [src]="board.image" [alt]="board.title" class="vision-image">
+
+                <div class="placeholder-content" *ngIf="!board.image">
+                    <span class="icon">✨</span>
+                    <h3>{{ board.title }}</h3>
+                    <p>Coming Soon...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bible Verses Section -->
+
+        <!-- Birthday Promises Section -->
+        <div class="verses-container" *ngIf="activeTab === 'birthday'">
+            <div class="chapter-card" *ngFor="let verse of birthdayVerses" style="border-left-color: #ec407a;">
+                <h2 style="color: #d81b60;">🎈 {{ verse.theme }}</h2>
+                <div class="verse-highlight" style="background: #fff8e1;">
+                    <span class="verse-ref" style="color: #ff6f00;">{{ verse.ref }}</span>
+                    <p>"{{ verse.text }}"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="decoration-circle c1"></div>
+    <div class="decoration-circle c2"></div>
+</div>

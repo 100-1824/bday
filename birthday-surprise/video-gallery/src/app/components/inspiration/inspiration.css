@@ -1,0 +1,233 @@
+.inspiration-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    padding: 2rem;
+    font-family: 'Poppins', sans-serif;
+    color: #4a148c;
+    position: relative;
+    overflow-y: auto;
+    /* Allow scrolling */
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: #7b1fa2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header p {
+    font-size: 1.1rem;
+    color: #6a1b9a;
+    opacity: 0.8;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 10;
+    flex-wrap: wrap;
+    /* Handle mobile */
+}
+
+.tab-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.6);
+    color: #6a1b9a;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.5rem;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+}
+
+.tab-btn.active {
+    background: #ab47bc;
+    color: white;
+    box-shadow: 0 4px 12px rgba(171, 71, 188, 0.3);
+}
+
+.content-area {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 2rem;
+}
+
+/* Vision Board Grid */
+.vision-grid {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.vision-card {
+    /* Responsive sizing */
+    flex: 1 1 400px;
+    max-width: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.vision-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.vision-card:hover .vision-image {
+    transform: scale(1.02);
+}
+
+.placeholder-content {
+    text-align: center;
+    color: white;
+    padding: 3rem;
+}
+
+.placeholder-content .icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.placeholder-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Verses Container */
+.verses-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.chapter-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid #ab47bc;
+    transition: transform 0.3s ease;
+}
+
+.chapter-card:hover {
+    transform: translateY(-5px);
+}
+
+.chapter-card h2 {
+    color: #7b1fa2;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.verse-highlight {
+    background: #fdf2e9;
+    /* Soft parchment color */
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.verse-highlight::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-size: 4rem;
+    color: #ffd180;
+    opacity: 0.5;
+    font-family: serif;
+}
+
+.verse-ref {
+    display: block;
+    font-weight: bold;
+    color: #e65100;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.verse-highlight p {
+    font-style: italic;
+    color: #5d4037;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.story-text p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Decorations */
+.decoration-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: 1;
+}
+
+.c1 {
+    width: 300px;
+    height: 300px;
+    background: rgba(225, 190, 231, 0.6);
+    top: -50px;
+    right: -50px;
+}
+
+.c2 {
+    width: 250px;
+    height: 250px;
+    background: rgba(179, 229, 252, 0.5);
+    bottom: -50px;
+    left: -50px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .tab-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .chapter-card {
+        padding: 1.5rem;
+    }
+
+    .verse-highlight {
+        padding: 1rem;
+    }
+}
