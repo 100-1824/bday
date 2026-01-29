@@ -118,16 +118,10 @@ Forever & Always Your Umzy💜`;
   constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-    // Only show letter popup once (first time visit)
-    const hasSeenLetter = localStorage.getItem('birthday_letter_seen');
-
-    if (!hasSeenLetter) {
-      setTimeout(() => {
-        this.showLetterOverlay = true;
-        localStorage.setItem('birthday_letter_seen', 'true');
-        this.cdr.detectChanges();
-      }, 1500);
-    }
+    setTimeout(() => {
+      this.showLetterOverlay = true;
+      this.cdr.detectChanges();
+    }, 1500);
   }
 
   ngAfterViewInit() {
