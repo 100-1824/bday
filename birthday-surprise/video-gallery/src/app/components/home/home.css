@@ -15,7 +15,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: url('https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&q=80') center/cover no-repeat;
+    background: url('/assets/images/banner.jpg') center/cover no-repeat;
     position: relative;
 }
 

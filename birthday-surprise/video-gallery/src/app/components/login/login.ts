@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   error = '';
 
   // Countdown
-  targetDate = new Date('2026-01-30T00:00:00'); // Her birthday!
+  targetDate = new Date('2026-01-30T00:00:00'); // Suvi's                                                                                                                                                                                                                                                                                             birthday!
   days = 0;
   hours = 0;
   minutes = 0;
