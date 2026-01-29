@@ -83,6 +83,40 @@ Forever & Always Your Umzy💜`;
     this.cdr.detectChanges();
   }
 
+  // Voice Notes
+  playingVoiceNote: number | null = null;
+  vn1 = new Audio('assets/audio/vn1.mp4');
+  vn2 = new Audio('assets/audio/vn2.mp4');
+
+  toggleVoiceNote(id: number) {
+    // Stop any currently playing audio
+    this.vn1.pause();
+    this.vn2.pause();
+
+    if (this.playingVoiceNote === id) {
+      // If clicking the same one, just stop it (already paused above)
+      this.playingVoiceNote = null;
+    } else {
+      // Play the selected one
+      const audioToPlay = id === 1 ? this.vn1 : this.vn2;
+      const fileName = id === 1 ? 'vn1.mp4' : 'vn2.mp4';
+
+      audioToPlay.currentTime = 0; // Restart from beginning
+      audioToPlay.play().catch(e => {
+        console.error("Error playing audio:", e);
+        alert(`Please place '${fileName}' in 'public/assets/audio/' folder!`);
+      });
+
+      this.playingVoiceNote = id;
+
+      audioToPlay.onended = () => {
+        this.playingVoiceNote = null;
+        this.cdr.detectChanges();
+      };
+    }
+    this.cdr.detectChanges();
+  }
+
   // Reasons I Love You
   reasons = [
     { text: "I love your smile so so so muchhhhh", emoji: "🥺" },

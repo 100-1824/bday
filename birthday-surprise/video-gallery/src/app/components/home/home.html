@@ -65,6 +65,28 @@
                 </div>
                 <p class="instruction-text">A Handwritten Note 📝</p>
             </div>
+
+            <!-- Voice Note 1 -->
+            <div class="letter-item">
+                <div class="envelope-container voice-note-container" (click)="toggleVoiceNote(1)">
+                    <div class="vinyl-record" [class.playing]="playingVoiceNote === 1">
+                        <div class="vinyl-label">Part 1</div>
+                    </div>
+                </div>
+                <p class="instruction-text" *ngIf="playingVoiceNote !== 1">Voice Note 1 🎙️</p>
+                <p class="instruction-text" *ngIf="playingVoiceNote === 1">Playing Part 1... 🎵</p>
+            </div>
+
+            <!-- Voice Note 2 -->
+            <div class="letter-item">
+                <div class="envelope-container voice-note-container" (click)="toggleVoiceNote(2)">
+                    <div class="vinyl-record" [class.playing]="playingVoiceNote === 2">
+                        <div class="vinyl-label" style="background: #ad1457;">Part 2</div>
+                    </div>
+                </div>
+                <p class="instruction-text" *ngIf="playingVoiceNote !== 2">Voice Note 2 🎙️</p>
+                <p class="instruction-text" *ngIf="playingVoiceNote === 2">Playing Part 2... 🎵</p>
+            </div>
         </div>
     </section>
 
