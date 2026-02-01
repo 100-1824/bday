@@ -54,12 +54,15 @@ class BibleVerse(db.Model):
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
 ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'mov', 'webm'}
+ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav', 'ogg', 'webm', 'm4a'}
 GALLERY_UPLOAD_FOLDER = os.path.join('static', 'images', 'WhatsApp Unknown 2026-01-25 at 2.47.31 AM')
 PRIVATE_UPLOAD_FOLDER = os.path.join('static', 'images', 'private')
+AUDIO_UPLOAD_FOLDER = os.path.join('static', 'audio')
 
 # Ensure upload directories exist
 os.makedirs(GALLERY_UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(PRIVATE_UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(AUDIO_UPLOAD_FOLDER, exist_ok=True)
 
 # --- CONFIGURATION & DATA (EDIT HERE) ---
 HER_NAME = "My Love"
@@ -98,7 +101,51 @@ def allowed_file(filename, file_type='image'):
         return ext in ALLOWED_IMAGE_EXTENSIONS
     elif file_type == 'video':
         return ext in ALLOWED_VIDEO_EXTENSIONS
+    elif file_type == 'audio':
+        return ext in ALLOWED_AUDIO_EXTENSIONS
     return False
+
+
+@app.route('/api/upload/gallery', methods=['POST'])
+def upload_to_gallery():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    
+    file = request.files['file']
+    file_type = request.form.get('type', 'image')
+    
+    if file.filename == '' or not allowed_file(file.filename, file_type):
+        return jsonify({'error': 'Invalid file'}), 400
+    
+    try:
+        filename = secure_filename(file.filename)
+        name, ext = os.path.splitext(filename)
+        filename = f"{name}_{int(time.time())}{ext}"
+        
+        if file_type == 'audio':
+            filepath = os.path.join(AUDIO_UPLOAD_FOLDER, filename)
+            url = f"/{AUDIO_UPLOAD_FOLDER}/{filename}".replace('\\', '/')
+            category = 'voice_note' # Or gallery? Let's use gallery for now or a new one. Plan didn't specify. 
+                                    # Actually home.html uses hardcoded paths. 
+                                    # If we want to List them dynamically, we should probably use 'voice_note' category.
+                                    # But for now, let's stick to 'gallery' or generic, 
+                                    # but wait, the voice notes in UI are specific "Part 1", "Part 2".
+                                    # The user wants "Record Your Own".
+                                    # So these should probably be fetched as a list.
+                                    # Let's use 'voice_note' category for clarity.
+            new_item = MediaItem(filename=filename, url=url, media_type='audio', category='voice_note')
+        else:
+            filepath = os.path.join(GALLERY_UPLOAD_FOLDER, filename)
+            url = f"/{GALLERY_UPLOAD_FOLDER}/{filename}".replace('\\', '/')
+            new_item = MediaItem(filename=filename, url=url, media_type=file_type, category='gallery')
+            
+        file.save(filepath)
+        db.session.add(new_item)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'url': url}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 def load_user_notes():
@@ -485,32 +532,6 @@ def delete_media():
     db.session.commit()
     return jsonify({'success': True, 'message': 'Deleted from DB and disk'}), 200
 
-@app.route('/api/upload/gallery', methods=['POST'])
-def upload_to_gallery():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
-    
-    file = request.files['file']
-    file_type = request.form.get('type', 'image')
-    
-    if file.filename == '' or not allowed_file(file.filename, file_type):
-        return jsonify({'error': 'Invalid file'}), 400
-    
-    try:
-        filename = secure_filename(file.filename)
-        name, ext = os.path.splitext(filename)
-        filename = f"{name}_{int(time.time())}{ext}"
-        filepath = os.path.join(GALLERY_UPLOAD_FOLDER, filename)
-        file.save(filepath)
-        
-        url = f"/{GALLERY_UPLOAD_FOLDER}/{filename}".replace('\\', '/')
-        new_item = MediaItem(filename=filename, url=url, media_type=file_type, category='gallery')
-        db.session.add(new_item)
-        db.session.commit()
-        
-        return jsonify({'success': True, 'url': url}), 201
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/inspiration/vision', methods=['GET'])
 def get_vision_boards():
@@ -560,6 +581,54 @@ def delete_verse_by_id(verse_id):
         db.session.commit()
         return jsonify({'success': True}), 200
     return jsonify({'error': 'Verse not found'}), 404
+
+@app.route('/api/upload/private', methods=['POST'])
+def upload_to_private():
+    password = request.form.get('password')
+    if password != '3001': # Simple password check
+        return jsonify({'error': 'Unauthorized'}), 401
+        
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    
+    file = request.files['file']
+    file_type = request.form.get('type', 'image')
+    
+    if file.filename == '' or not allowed_file(file.filename, file_type):
+        return jsonify({'error': 'Invalid file'}), 400
+    
+    try:
+        filename = secure_filename(file.filename)
+        name, ext = os.path.splitext(filename)
+        filename = f"{name}_{int(time.time())}{ext}"
+        filepath = os.path.join(PRIVATE_UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        
+        url = f"/{PRIVATE_UPLOAD_FOLDER}/{filename}".replace('\\', '/')
+        new_item = MediaItem(filename=filename, url=url, media_type=file_type, category='private')
+        db.session.add(new_item)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'url': url}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/private/media', methods=['POST'])
+def get_private_media():
+    data = request.get_json()
+    if not data or data.get('password') != '3001':
+        return jsonify({'error': 'Unauthorized'}), 401
+        
+    items = MediaItem.query.filter_by(category='private').all()
+    media = {"images": [], "videos": []}
+    
+    for item in items:
+        if item.media_type == 'image':
+            media["images"].append(item.url)
+        else:
+            media["videos"].append(item.url)
+            
+    return jsonify(media)
 
 if __name__ == '__main__':
     migrate_data() # Run migration on start

@@ -62,6 +62,14 @@ export class ApiService {
     return this.http.post('/api/upload/private', formData);
   }
 
+  uploadAudio(file: Blob): Observable<any> {
+    const formData = new FormData();
+    // Filename is needed for Blob
+    formData.append('file', file, `recording_${new Date().getTime()}.webm`);
+    formData.append('type', 'audio');
+    return this.http.post('/api/upload/gallery', formData);
+  }
+
   deleteMedia(url: string): Observable<any> {
     return this.http.delete('/api/media', { body: { url } });
   }

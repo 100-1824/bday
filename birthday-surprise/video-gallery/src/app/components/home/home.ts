@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import * as L from 'leaflet';
+import { ApiService } from '../../services/api';
 
 @Component({
   selector: 'app-home',
@@ -88,6 +89,14 @@ Forever & Always Your Umzy💜`;
   vn1 = new Audio('assets/audio/vn1.mp4');
   vn2 = new Audio('assets/audio/vn2.mp4');
 
+  // Recorder
+  mediaRecorder: MediaRecorder | null = null;
+  audioChunks: Blob[] = [];
+  isRecording = false;
+  recordedBlob: Blob | null = null;
+  recordedAudioUrl: string | null = null;
+  isUploading = false;
+
   toggleVoiceNote(id: number) {
     // Stop any currently playing audio
     this.vn1.pause();
@@ -116,6 +125,70 @@ Forever & Always Your Umzy💜`;
     }
     this.cdr.detectChanges();
   }
+
+  // Recording Logic
+  startRecording() {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.mediaRecorder.start();
+        this.isRecording = true;
+        this.audioChunks = [];
+
+        this.mediaRecorder.addEventListener("dataavailable", event => {
+          this.audioChunks.push(event.data);
+        });
+
+        this.mediaRecorder.addEventListener("stop", () => {
+          this.recordedBlob = new Blob(this.audioChunks, { type: 'audio/webm' }); // or audio/mp3 depending on browser support, webm is safer
+          this.recordedAudioUrl = URL.createObjectURL(this.recordedBlob);
+          this.isRecording = false;
+          this.cdr.detectChanges();
+        });
+
+        this.cdr.detectChanges();
+      })
+      .catch(err => {
+        console.error("Error accessing microphone:", err);
+        alert("Could not access microphone. Please ensure you have granted permission.");
+      });
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder && this.isRecording) {
+      this.mediaRecorder.stop();
+      // Stop all tracks to release microphone
+      this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    }
+  }
+
+  discardRecording() {
+    this.recordedBlob = null;
+    this.recordedAudioUrl = null;
+    this.audioChunks = [];
+    this.cdr.detectChanges();
+  }
+
+  uploadRecording() {
+    if (!this.recordedBlob) return;
+
+    this.isUploading = true;
+    this.apiService.uploadAudio(this.recordedBlob).subscribe({
+      next: (res) => {
+        alert('Voice note saved successfully! 💜');
+        this.discardRecording();
+        this.isUploading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Upload failed', err);
+        alert('Failed to save voice note. Please try again.');
+        this.isUploading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
 
   // Reasons I Love You
   reasons = [
@@ -149,7 +222,7 @@ Forever & Always Your Umzy💜`;
 
   private map: any;
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private cdr: ChangeDetectorRef, private apiService: ApiService) { }
 
   ngOnInit() {
     setTimeout(() => {

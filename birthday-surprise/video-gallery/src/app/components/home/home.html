@@ -68,24 +68,57 @@
 
             <!-- Voice Note 1 -->
             <div class="letter-item">
-                <div class="envelope-container voice-note-container" (click)="toggleVoiceNote(1)">
-                    <div class="vinyl-record" [class.playing]="playingVoiceNote === 1">
-                        <div class="vinyl-label">Part 1</div>
+                <div class="voice-note-card" [class.playing]="playingVoiceNote === 1">
+                    <button class="play-btn" (click)="toggleVoiceNote(1)">
+                        <span *ngIf="playingVoiceNote !== 1">▶</span>
+                        <span *ngIf="playingVoiceNote === 1">⏸</span>
+                    </button>
+                    <div class="voice-info">
+                        <span class="voice-title">Voice Note 1 🎙️</span>
+                        <span class="voice-status" *ngIf="playingVoiceNote === 1">Playing...</span>
                     </div>
                 </div>
-                <p class="instruction-text" *ngIf="playingVoiceNote !== 1">Voice Note 1 🎙️</p>
-                <p class="instruction-text" *ngIf="playingVoiceNote === 1">Playing Part 1... 🎵</p>
             </div>
 
             <!-- Voice Note 2 -->
             <div class="letter-item">
-                <div class="envelope-container voice-note-container" (click)="toggleVoiceNote(2)">
-                    <div class="vinyl-record" [class.playing]="playingVoiceNote === 2">
-                        <div class="vinyl-label" style="background: #ad1457;">Part 2</div>
+                <div class="voice-note-card" [class.playing]="playingVoiceNote === 2">
+                    <button class="play-btn" (click)="toggleVoiceNote(2)">
+                        <span *ngIf="playingVoiceNote !== 2">▶</span>
+                        <span *ngIf="playingVoiceNote === 2">⏸</span>
+                    </button>
+                    <div class="voice-info">
+                        <span class="voice-title">Voice Note 2 🎙️</span>
+                        <span class="voice-status" *ngIf="playingVoiceNote === 2">Playing...</span>
                     </div>
                 </div>
-                <p class="instruction-text" *ngIf="playingVoiceNote !== 2">Voice Note 2 🎙️</p>
-                <p class="instruction-text" *ngIf="playingVoiceNote === 2">Playing Part 2... 🎵</p>
+            </div>
+
+            <!-- Record Your Own -->
+            <div class="letter-item full-width">
+                <div class="recorder-card">
+                    <h3>Record a Message 🎤</h3>
+                    <div class="recorder-controls">
+                        <button class="record-btn" *ngIf="!isRecording && !recordedBlob" (click)="startRecording()">
+                            🔴 Record
+                        </button>
+                        <button class="stop-btn" *ngIf="isRecording" (click)="stopRecording()">
+                            ⏹ Stop
+                        </button>
+
+                        <div *ngIf="recordedBlob" class="recording-actions">
+                            <audio [src]="recordedAudioUrl" controls class="preview-audio"></audio>
+                            <div class="action-buttons">
+                                <button class="save-btn" (click)="uploadRecording()" [disabled]="isUploading">
+                                    {{ isUploading ? 'Saving...' : '💾 Save' }}
+                                </button>
+                                <button class="discard-btn" (click)="discardRecording()" [disabled]="isUploading">
+                                    🗑 Discard
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
