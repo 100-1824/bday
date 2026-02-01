@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { UploadButtonComponent } from '../upload-button/upload-button';
 
 @Component({
     selector: 'app-private',
     standalone: true,
-    imports: [CommonModule, RouterLink, FormsModule],
+    imports: [CommonModule, RouterLink, FormsModule, UploadButtonComponent],
     templateUrl: './private.html',
     styleUrls: ['./private.css']
 })
@@ -83,5 +84,10 @@ export class PrivateComponent {
         this.password = '';
         this.images = [];
         this.videos = [];
+    }
+
+    onUploadComplete() {
+        // Refresh media list after successful upload
+        this.loadMedia();
     }
 }

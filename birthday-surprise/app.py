@@ -4,9 +4,62 @@ import os
 import glob
 from datetime import datetime
 import time
+from werkzeug.utils import secure_filename
 
+
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
+# Database Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///birthday.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Models
+class MediaItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), nullable=False)
+    url = db.Column(db.String(500), nullable=False)
+    media_type = db.Column(db.String(50), nullable=False) # 'image', 'video'
+    category = db.Column(db.String(50), nullable=False) # 'gallery', 'nails', 'private'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    text = db.Column(db.Text, nullable=False)
+    image = db.Column(db.String(255))
+    category = db.Column(db.String(50), default='notes')
+    is_user_note = db.Column(db.Boolean, default=False)
+    created_at_usec = db.Column(db.BigInteger) # To match Keep timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class VisionBoard(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    image = db.Column(db.String(500))
+    placeholder_color = db.Column(db.String(50), default='#E1BEE7')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class BibleVerse(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ref = db.Column(db.String(255), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+    theme = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+# Upload Configuration
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size
+ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_VIDEO_EXTENSIONS = {'mp4', 'mov', 'webm'}
+GALLERY_UPLOAD_FOLDER = os.path.join('static', 'images', 'WhatsApp Unknown 2026-01-25 at 2.47.31 AM')
+PRIVATE_UPLOAD_FOLDER = os.path.join('static', 'images', 'private')
+
+# Ensure upload directories exist
+os.makedirs(GALLERY_UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(PRIVATE_UPLOAD_FOLDER, exist_ok=True)
 
 # --- CONFIGURATION & DATA (EDIT HERE) ---
 HER_NAME = "My Love"
@@ -19,6 +72,33 @@ HER_CITY_NAME = "Paris"
 KEEP_EXPORT_DIR = "keep_export/Takeout/Keep" # Updated path
 KEEP_LABEL = "BirthdayNotes"
 USER_NOTES_FILE = "user_notes.json"  # File to store user-created notes
+VISION_BOARDS_FILE = "vision_boards.json"
+VERSES_FILE = "verses.json"
+
+def load_data_file(filepath):
+    if os.path.exists(filepath):
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
+def save_data_file(filepath, data):
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def allowed_file(filename, file_type='image'):
+    """Check if file extension is allowed"""
+    if '.' not in filename:
+        return False
+    ext = filename.rsplit('.', 1)[1].lower()
+    if file_type == 'image':
+        return ext in ALLOWED_IMAGE_EXTENSIONS
+    elif file_type == 'video':
+        return ext in ALLOWED_VIDEO_EXTENSIONS
+    return False
 
 
 def load_user_notes():
@@ -56,41 +136,8 @@ REASONS_I_LOVE_YOU = [
 ]
 
 
-@app.route('/api/notes')
-def get_notes():
-    notes = get_parsed_notes()
-    # Add user-created notes at the beginning
-    user_notes = load_user_notes()
-    return jsonify(user_notes + notes)
-
-@app.route('/api/notes', methods=['POST'])
-def create_note():
-    """Create a new note"""
-    data = request.get_json()
-    if not data or 'text' not in data:
-        return jsonify({'error': 'Text is required'}), 400
-    
-    new_note = {
-        'title': data.get('title', ''),
-        'text': data['text'],
-        'created': int(time.time() * 1000000),  # Microseconds like Keep notes
-        'image': None,
-        'isUserNote': True  # Mark as user-created
-    }
-    
-    user_notes = load_user_notes()
-    user_notes.insert(0, new_note)  # Add to beginning
-    save_user_notes(user_notes)
-    
-    return jsonify(new_note), 201
-
-# Helper to look for Angular's index.html if we were serving static build
-# For dev, we use the proxy in Angular CLI.
 @app.route('/')
 def index():
-    # If using typical Angular build output in static/frontend
-    # return send_from_directory('static/frontend', 'index.html')
-    # But since we are likely developing, we can just return a message or redirect
     return "Please visit port 4200 for the Angular App (Frontend)"
     
     try:
@@ -233,91 +280,287 @@ def serve_note_image_api(filename):
     return send_from_directory(KEEP_EXPORT_DIR, filename)
 
 
+# --- MIGRATION LOGIC ---
+
+def migrate_data():
+    with app.app_context():
+        db.create_all()
+        
+        # 1. Migrate Vision Boards
+        if not VisionBoard.query.first():
+            boards = load_data_file(VISION_BOARDS_FILE)
+            if not boards:
+                boards = [
+                    { "id": 1, "title": "Bible Vision Board", "image": "/assets/images/vision-board.jpg", "placeholder_color": "#E1BEE7" },
+                    { "id": 2, "title": "Church & Home", "image": "/assets/images/church-home-board.jpg", "placeholder_color": "#C5CAE9" }
+                ]
+            for b_data in boards:
+                b = VisionBoard(
+                    title=b_data.get('title'),
+                    image=b_data.get('image'),
+                    placeholder_color=b_data.get('placeholder_color') or b_data.get('placeholderColor')
+                )
+                db.session.add(b)
+        
+        # 2. Migrate Bible Verses
+        if not BibleVerse.query.first():
+            verses = load_data_file(VERSES_FILE)
+            if not verses:
+                verses = [
+                    { "ref": "Numbers 6:24-26", "text": "The Lord bless you and keep you...", "theme": "Blessing" }
+                ]
+            for v_data in verses:
+                v = BibleVerse(ref=v_data.get('ref'), text=v_data.get('text'), theme=v_data.get('theme'))
+                db.session.add(v)
+        
+        # 3. Migrate Notes
+        if not Note.query.filter_by(is_user_note=True).first():
+            user_notes = load_user_notes()
+            for n_data in user_notes:
+                n = Note(
+                    title=n_data.get('title'),
+                    text=n_data.get('text'),
+                    image=n_data.get('image'),
+                    category=n_data.get('category', 'notes'),
+                    is_user_note=True,
+                    created_at_usec=n_data.get('created')
+                )
+                db.session.add(n)
+        
+        # 4. Migrate/Scan Media
+        if not MediaItem.query.first():
+            # Gallery
+            base_dir = os.path.join(app.root_path, 'static', 'images', 'WhatsApp Unknown 2026-01-25 at 2.47.31 AM')
+            if os.path.exists(base_dir):
+                for filename in os.listdir(base_dir):
+                    if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.mp4', '.mov', '.webm')):
+                        url = f"/static/images/WhatsApp Unknown 2026-01-25 at 2.47.31 AM/{filename}"
+                        mtype = 'image' if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')) else 'video'
+                        m = MediaItem(filename=filename, url=url, media_type=mtype, category='gallery')
+                        db.session.add(m)
+            # Nails
+            nails_dir = os.path.join(app.root_path, 'static', 'images', 'nails')
+            if os.path.exists(nails_dir):
+                for filename in os.listdir(nails_dir):
+                    if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                        url = f"/static/images/nails/{filename}"
+                        m = MediaItem(filename=filename, url=url, media_type='image', category='nails')
+                        db.session.add(m)
+            # Private
+            private_dir = os.path.join(app.root_path, 'static', 'images', 'private')
+            if os.path.exists(private_dir):
+                for filename in os.listdir(private_dir):
+                    if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.mp4', '.mov', '.webm')):
+                        url = f"/static/images/private/{filename}"
+                        mtype = 'image' if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')) else 'video'
+                        m = MediaItem(filename=filename, url=url, media_type=mtype, category='private')
+                        db.session.add(m)
+                        
+        db.session.commit()
+
+# --- REFACTORED ENDPOINTS ---
+
+@app.route('/api/notes')
+def get_notes():
+    # User notes from DB
+    db_notes = Note.query.filter_by(is_user_note=True).order_by(Note.created_at.desc()).all()
+    user_notes = [{
+        'id': n.id,
+        'title': n.title,
+        'text': n.text,
+        'image': n.image,
+        'category': n.category,
+        'isUserNote': True,
+        'created': n.created_at_usec or int(n.created_at.timestamp() * 1000000)
+    } for n in db_notes]
+    
+    # Static notes from Keep
+    keep_notes = get_parsed_notes()
+    return jsonify(user_notes + keep_notes)
+
+@app.route('/api/notes', methods=['POST'])
+def create_note():
+    data = request.get_json()
+    if not data or 'text' not in data:
+        return jsonify({'error': 'Text is required'}), 400
+    
+    new_note = Note(
+        title=data.get('title', ''),
+        text=data['text'],
+        category=data.get('category', 'notes'),
+        is_user_note=True,
+        created_at_usec=int(time.time() * 1000000)
+    )
+    db.session.add(new_note)
+    db.session.commit()
+    
+    return jsonify({
+        'id': new_note.id,
+        'title': new_note.title,
+        'text': new_note.text,
+        'created': new_note.created_at_usec,
+        'isUserNote': True
+    }), 201
+
+@app.route('/api/notes/<int:note_id>', methods=['DELETE'])
+def delete_note(note_id):
+    note = Note.query.get(note_id)
+    if note:
+        db.session.delete(note)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    return jsonify({'error': 'Note not found'}), 404
+
 @app.route('/api/media')
 def get_media():
-    base_dir = os.path.join(app.root_path, 'static', 'images', 'WhatsApp Unknown 2026-01-25 at 2.47.31 AM')
-    nails_dir = os.path.join(app.root_path, 'static', 'images', 'nails')
-    
-    media = {
-        "images": [],
-        "videos": [],
-        "nails": []
-    }
-    
-    # Main gallery images
-    if os.path.exists(base_dir):
-        for filename in os.listdir(base_dir):
-            file_path = os.path.join(base_dir, filename)
-            if not os.path.isfile(file_path):
-                continue
-                
-            file_url = f"/static/images/WhatsApp Unknown 2026-01-25 at 2.47.31 AM/{filename}"
-            
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                media["images"].append(file_url)
-            elif filename.lower().endswith(('.mp4', '.mov', '.webm')):
-                media["videos"].append(file_url)
-    
-    # Nails images
-    if os.path.exists(nails_dir):
-        for filename in os.listdir(nails_dir):
-            file_path = os.path.join(nails_dir, filename)
-            if not os.path.isfile(file_path):
-                continue
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                media["nails"].append(f"/static/images/nails/{filename}")
-            
+    items = MediaItem.query.all()
+    print(f"DEBUG: Found {len(items)} total media items in DB")
+    media = {"images": [], "videos": [], "nails": []}
+    for item in items:
+        if item.category == 'gallery':
+            if item.media_type == 'image':
+                media["images"].append(item.url)
+            else:
+                media["videos"].append(item.url)
+        elif item.category == 'nails':
+            media["nails"].append(item.url)
     return jsonify(media)
 
-# Private media with password protection
-PRIVATE_PASSWORD = "3001"
-
-@app.route('/api/private/verify', methods=['POST'])
-def verify_private_password():
-    """Verify password for private gallery access"""
+@app.route('/api/media', methods=['DELETE'])
+def delete_media():
     data = request.get_json()
-    password = data.get('password', '')
+    if not data or 'url' not in data:
+        return jsonify({'error': 'URL is required'}), 400
     
-    if password == PRIVATE_PASSWORD:
-        return jsonify({'success': True})
-    return jsonify({'success': False, 'error': 'Wrong password'}), 401
+    url = data['url']
+    print(f"DEBUG: Deleting media with URL: '{url}'")
+    
+    # Try exact match
+    item = MediaItem.query.filter_by(url=url).first()
+    
+    # Try leading slash variation
+    if not item:
+        alt_url = url[1:] if url.startswith('/') else '/' + url
+        item = MediaItem.query.filter_by(url=alt_url).first()
+        if item:
+            print(f"DEBUG: Found item with alt URL: '{alt_url}'")
 
-@app.route('/api/private/media', methods=['POST'])
-def get_private_media():
-    """Get private media (requires password in request)"""
-    data = request.get_json()
-    password = data.get('password', '')
+    # Try decoded variation (if URL encoded with %20 etc)
+    if not item:
+        from urllib.parse import unquote
+        decoded_url = unquote(url)
+        if decoded_url != url:
+            item = MediaItem.query.filter_by(url=decoded_url).first()
+            if not item:
+                alt_decoded = decoded_url[1:] if decoded_url.startswith('/') else '/' + decoded_url
+                item = MediaItem.query.filter_by(url=alt_decoded).first()
+            if item:
+                print(f"DEBUG: Found item with decoded URL: '{decoded_url}'")
     
-    if password != PRIVATE_PASSWORD:
-        return jsonify({'error': 'Unauthorized'}), 401
-    
-    private_dir = os.path.join(app.root_path, 'static', 'images', 'private')
-    
-    media = {
-        "images": [],
-        "videos": []
-    }
-    
-    if os.path.exists(private_dir):
-        for filename in os.listdir(private_dir):
-            file_path = os.path.join(private_dir, filename)
-            if not os.path.isfile(file_path):
-                continue
-            file_url = f"/static/images/private/{filename}"
+    if not item:
+        print(f"DEBUG: Item not found in DB for URL: '{url}'")
+        # Check if file exists anyway
+        filepath = url.lstrip('/')
+        if os.path.exists(filepath):
+            print(f"DEBUG: File exists on disk but not in DB: '{filepath}'")
+            try:
+                os.remove(filepath)
+                return jsonify({'success': True, 'message': 'File deleted from disk (not in DB)'}), 200
+            except Exception as e:
+                return jsonify({'error': f'Disk delete failed: {str(e)}'}), 500
+        return jsonify({'error': 'Item not found in database or disk'}), 404
+
+    # Delete file from disk
+    filepath = item.url.lstrip('/')
+    if os.path.exists(filepath):
+        try:
+            os.remove(filepath)
+            print(f"DEBUG: Deleted file from disk: '{filepath}'")
+        except Exception as e:
+            print(f"DEBUG: Failed to delete file from disk: '{filepath}', error: {e}")
+    else:
+        print(f"DEBUG: File not found on disk: '{filepath}' (deleting from DB anyway)")
             
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                media["images"].append(file_url)
-            elif filename.lower().endswith(('.mp4', '.mov', '.webm')):
-                media["videos"].append(file_url)
-    
-    return jsonify(media)
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({'success': True, 'message': 'Deleted from DB and disk'}), 200
 
-# Serve Angular App (Assuming build output will be in static/frontend or similar)
-# For now, just a placeholder or we can setup a route that returns the angular index.html
-# once it is built.
-@app.route('/gallery')
-def gallery_page():
-     return render_template('gallery_index.html') # We will need to create this or point to angular dist
+@app.route('/api/upload/gallery', methods=['POST'])
+def upload_to_gallery():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    
+    file = request.files['file']
+    file_type = request.form.get('type', 'image')
+    
+    if file.filename == '' or not allowed_file(file.filename, file_type):
+        return jsonify({'error': 'Invalid file'}), 400
+    
+    try:
+        filename = secure_filename(file.filename)
+        name, ext = os.path.splitext(filename)
+        filename = f"{name}_{int(time.time())}{ext}"
+        filepath = os.path.join(GALLERY_UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        
+        url = f"/{GALLERY_UPLOAD_FOLDER}/{filename}".replace('\\', '/')
+        new_item = MediaItem(filename=filename, url=url, media_type=file_type, category='gallery')
+        db.session.add(new_item)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'url': url}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/inspiration/vision', methods=['GET'])
+def get_vision_boards():
+    boards = VisionBoard.query.all()
+    return jsonify([{
+        'id': b.id,
+        'title': b.title,
+        'image': b.image,
+        'placeholderColor': b.placeholder_color
+    } for b in boards])
+
+@app.route('/api/inspiration/vision', methods=['POST'])
+def add_vision_board():
+    data = request.get_json()
+    new_board = VisionBoard(
+        title=data.get('title'),
+        image=data.get('image'),
+        placeholder_color=data.get('placeholderColor', '#E1BEE7')
+    )
+    db.session.add(new_board)
+    db.session.commit()
+    return jsonify({'id': new_board.id}), 201
+
+@app.route('/api/inspiration/verses', methods=['GET'])
+def get_verses():
+    verses = BibleVerse.query.all()
+    return jsonify([{
+        'id': v.id,
+        'ref': v.ref,
+        'text': v.text,
+        'theme': v.theme
+    } for v in verses])
+
+@app.route('/api/inspiration/verses', methods=['POST'])
+def add_verse():
+    data = request.get_json()
+    new_verse = BibleVerse(ref=data.get('ref'), text=data.get('text'), theme=data.get('theme'))
+    db.session.add(new_verse)
+    db.session.commit()
+    return jsonify({'id': new_verse.id}), 201
+
+@app.route('/api/inspiration/verses/<int:verse_id>', methods=['DELETE'])
+def delete_verse_by_id(verse_id):
+    v = BibleVerse.query.get(verse_id)
+    if v:
+        db.session.delete(v)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    return jsonify({'error': 'Verse not found'}), 404
 
 if __name__ == '__main__':
+    migrate_data() # Run migration on start
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -19,23 +19,15 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   getMedia(): Observable<MediaResponse> {
-    return this.http.get<MediaResponse>(this.mediaUrl);
+    return this.http.get<MediaResponse>('/api/media');
   }
 
   getNotes(): Observable<any[]> {
-    return this.http.get<any[]>(this.notesUrl);
+    return this.http.get<any[]>('/api/notes');
   }
 
   getPrivateMedia(password: string): Observable<MediaResponse> {
-    // Simple client-side check for static site
-    // In a real app, this would be server-side
-    if (password === '3001') {
-      return this.http.get<MediaResponse>(this.privateMediaUrl);
-    } else {
-      return new Observable(observer => {
-        observer.error({ status: 401, error: 'Unauthorized' });
-      });
-    }
+    return this.http.post<MediaResponse>('/api/private/media', { password });
   }
 
   // Legacy method signature for compatibility if needed
@@ -51,5 +43,61 @@ export class ApiService {
         observer.complete();
       });
     }
+  }
+
+  uploadToGallery(file: File, type: 'image' | 'video'): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    return this.http.post('/api/upload/gallery', formData);
+  }
+
+  uploadToPrivate(file: File, password: string, type: 'image' | 'video'): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('password', password);
+    formData.append('type', type);
+
+    return this.http.post('/api/upload/private', formData);
+  }
+
+  deleteMedia(url: string): Observable<any> {
+    return this.http.delete('/api/media', { body: { url } });
+  }
+
+  // Notes CRUD
+  addNote(note: any): Observable<any> {
+    return this.http.post('/api/notes', note);
+  }
+
+  deleteNote(id: string): Observable<any> {
+    return this.http.delete(`/api/notes/${id}`);
+  }
+
+  // Inspiration (Vision/Faith) CRUD
+  getVisionBoards(): Observable<any[]> {
+    return this.http.get<any[]>('/api/inspiration/vision');
+  }
+
+  addVisionBoard(board: any): Observable<any> {
+    return this.http.post('/api/inspiration/vision', board);
+  }
+
+  deleteVisionBoard(id: number): Observable<any> {
+    return this.http.delete(`/api/inspiration/vision/${id}`);
+  }
+
+  getVerses(): Observable<any[]> {
+    return this.http.get<any[]>('/api/inspiration/verses');
+  }
+
+  addVerse(verse: any): Observable<any> {
+    return this.http.post('/api/inspiration/verses', verse);
+  }
+
+  deleteVerse(ref: string): Observable<any> {
+    // decoding ref might be needed on server side
+    return this.http.delete(`/api/inspiration/verses/${encodeURIComponent(ref)}`);
   }
 }

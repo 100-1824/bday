@@ -53,6 +53,7 @@
     <div class="masonry-grid" *ngIf="!isLoading && !error">
         <div class="note-card" *ngFor="let note of filteredNotes" [class.user-note]="note.isUserNote">
             <span class="user-badge" *ngIf="note.isUserNote">✨ New</span>
+            <button class="delete-note-btn" (click)="deleteNote(note, $event)">×</button>
             <span class="category-badge" *ngIf="note.category && note.category !== 'all'">
                 {{ note.category === 'letters' ? '💌' : note.category === 'poems' ? '🖇️' : note.category === 'reasons'
                 ? '❤️‍🩹' : '📝' }}

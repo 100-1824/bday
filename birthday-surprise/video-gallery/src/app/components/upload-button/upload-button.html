@@ -1,0 +1,21 @@
+<div class="upload-container">
+    <input type="file" [id]="'file-input-' + uploadType + '-' + fileType"
+        [accept]="fileType === 'image' ? 'image/png,image/jpeg,image/jpg,image/gif' : 'video/mp4,video/mov,video/webm'"
+        (change)="onFileSelected($event)" style="display: none;">
+
+    <button class="upload-btn" (click)="triggerFileInput()" [disabled]="isUploading" [class.uploading]="isUploading">
+        <span class="icon" *ngIf="!isUploading">📤</span>
+        <span class="icon spinner" *ngIf="isUploading">⏳</span>
+        <span class="text">{{ isUploading ? 'Uploading...' : 'Upload ' + (fileType === 'image' ? 'Photo' : 'Video')
+            }}</span>
+    </button>
+
+    <div class="progress-bar" *ngIf="isUploading">
+        <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+    </div>
+
+    <div class="message" *ngIf="message" [class.success]="messageType === 'success'"
+        [class.error]="messageType === 'error'">
+        {{ message }}
+    </div>
+</div>

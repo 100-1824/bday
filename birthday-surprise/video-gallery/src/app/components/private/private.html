@@ -22,9 +22,19 @@
     <!-- Unlocked Gallery -->
     <div class="gallery-content" *ngIf="isUnlocked">
         <header>
-            <h1>Private Collection 🔓</h1>
-            <p>For your eyes only</p>
-            <button class="lock-btn" (click)="lock()">🔒 Lock</button>
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Private Collection 🔓</h1>
+                    <p>For your eyes only</p>
+                </div>
+                <div class="header-actions">
+                    <app-upload-button uploadType="private" fileType="image" [password]="password"
+                        (uploadComplete)="onUploadComplete()"></app-upload-button>
+                    <app-upload-button uploadType="private" fileType="video" [password]="password"
+                        (uploadComplete)="onUploadComplete()"></app-upload-button>
+                    <button class="lock-btn" (click)="lock()">🔒 Lock</button>
+                </div>
+            </div>
         </header>
 
         <div class="loading" *ngIf="isLoading">

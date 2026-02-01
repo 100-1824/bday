@@ -64,3 +64,34 @@ video {
         font-size: 2rem;
     }
 }
+
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 107, 129, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 30;
+    transition: all 0.3s;
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.video-container:hover .delete-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delete-btn:hover {
+    background: #FF4757;
+    transform: scale(1.1) rotate(90deg);
+}

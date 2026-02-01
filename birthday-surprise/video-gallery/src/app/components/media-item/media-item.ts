@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 })
 export class MediaItemComponent {
   @Input() videoUrl: string = '';
+  @Output() delete = new EventEmitter<void>();
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
 
   isPlaying = false;
@@ -27,5 +28,10 @@ export class MediaItemComponent {
     this.videoPlayer.nativeElement.pause();
     this.videoPlayer.nativeElement.currentTime = 0; // Reset
     this.isPlaying = false;
+  }
+
+  onDelete(event: Event) {
+    event.stopPropagation();
+    this.delete.emit();
   }
 }

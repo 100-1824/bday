@@ -2,8 +2,18 @@
     <a routerLink="/home" class="back-link">← Back to Home</a>
 
     <header>
-        <h1>Our Memories 📸</h1>
-        <p>Moments frozen in time</p>
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Our Memories 📸</h1>
+                <p>Moments frozen in time</p>
+            </div>
+            <div class="header-actions">
+                <app-upload-button *ngIf="activeTab === 'photos'" uploadType="gallery" fileType="image"
+                    (uploadComplete)="onUploadComplete()"></app-upload-button>
+                <app-upload-button *ngIf="activeTab === 'videos'" uploadType="gallery" fileType="video"
+                    (uploadComplete)="onUploadComplete()"></app-upload-button>
+            </div>
+        </div>
     </header>
 
     <div class="tabs">
@@ -26,6 +36,7 @@
         <div class="media-grid" *ngIf="activeTab === 'photos'">
             <div class="photo-item" *ngFor="let img of images" (click)="openLightbox(img)">
                 <img [src]="img" loading="lazy" alt="Memory">
+                <button class="delete-btn" (click)="deleteItem(img, $event)">×</button>
             </div>
             <p *ngIf="images.length === 0" class="empty-state">No photos found.</p>
         </div>
@@ -34,6 +45,7 @@
         <div class="media-grid nails-grid" *ngIf="activeTab === 'nails'">
             <div class="photo-item nail-item" *ngFor="let img of nails" (click)="openLightbox(img)">
                 <img [src]="img" loading="lazy" alt="Nails">
+                <button class="delete-btn" (click)="deleteItem(img, $event)">×</button>
             </div>
             <p *ngIf="nails.length === 0" class="empty-state">
                 No nail photos yet! 💅<br>
@@ -43,7 +55,7 @@
 
         <!-- Videos Tab - Grid Layout -->
         <div class="video-grid" *ngIf="activeTab === 'videos'">
-            <app-media-item *ngFor="let vid of videos" [videoUrl]="vid"></app-media-item>
+            <app-media-item *ngFor="let vid of videos" [videoUrl]="vid" (delete)="deleteItem(vid)"></app-media-item>
             <p *ngIf="videos.length === 0" class="empty-state">No videos found.</p>
         </div>
     </div>

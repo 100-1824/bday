@@ -94,7 +94,63 @@ export class NotesComponent implements OnInit {
   }
 
   saveNote() {
-    alert("Note saving is disabled in this static demo version.");
-    this.toggleForm();
+    if (!this.newNote.text.trim()) return;
+
+    this.isSaving = true;
+    const noteData = {
+      ...this.newNote,
+      created: Date.now(),
+      isUserNote: true
+    };
+
+    // Use current time as ID loosely, real backend would assign ID
+    const optimisticNote = { ...noteData, id: 'temp-' + Date.now() };
+    // Optimization: Add immediately to UI
+    this.notes.unshift(optimisticNote);
+    this.filterNotes();
+    this.showForm = false;
+    this.newNote = { title: '', text: '', category: 'notes' };
+
+    this.apiService.addNote(noteData).subscribe({
+      next: (savedNote) => {
+        // Replace temp note with real one if needed, or just reload
+        // converting temp ID to real ID would be better but reloading is safer for now
+        this.loadNotes();
+        this.isSaving = false;
+      },
+      error: (err) => {
+        console.error('Failed to save note', err);
+        alert('Failed to save note: ' + err.message);
+        this.isSaving = false;
+        // Rollback
+        this.notes = this.notes.filter(n => n !== optimisticNote);
+        this.filterNotes();
+      }
+    });
+  }
+
+  deleteNote(note: Note, event: Event) {
+    event.stopPropagation();
+    if (!confirm('Are you sure you want to delete this note?')) return;
+
+    // We need an ID to delete. Assuming the note object has an ID field from the DB.
+    // If interface Note doesn't have ID, we might need to update it or cast it.
+    const noteId = (note as any)._id || (note as any).id;
+
+    if (!noteId) {
+      alert('Cannot delete this note (missing ID).');
+      return;
+    }
+
+    this.apiService.deleteNote(noteId).subscribe({
+      next: () => {
+        this.notes = this.notes.filter(n => n !== note);
+        this.filterNotes();
+      },
+      error: (err) => {
+        console.error('Failed to delete note', err);
+        alert('Failed to delete note');
+      }
+    });
   }
 }

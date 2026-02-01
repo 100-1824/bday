@@ -15,29 +15,62 @@
 
     <div class="content-area">
         <!-- Vision Boards Section -->
-        <div class="vision-grid" *ngIf="activeTab === 'vision'">
-            <div class="vision-card" *ngFor="let board of visionBoards"
-                [style.background-color]="board.placeholderColor">
+        <div class="section-container" *ngIf="activeTab === 'vision'">
+            <div class="action-bar">
+                <button class="add-btn" (click)="toggleBoardForm()">
+                    {{ showBoardForm ? 'Cancel' : '+ Add New Board' }}
+                </button>
+            </div>
 
-                <img *ngIf="board.image" [src]="board.image" [alt]="board.title" class="vision-image">
+            <!-- New Board Form -->
+            <div class="form-card" *ngIf="showBoardForm">
+                <h3>Create New Vision Board ✨</h3>
+                <input [(ngModel)]="newBoard.title" placeholder="Board Title" class="form-input">
+                <input [(ngModel)]="newBoard.image" placeholder="Image URL (optional)" class="form-input">
+                <button class="submit-btn" (click)="addBoard()" [disabled]="!newBoard.title">Create Board</button>
+            </div>
 
-                <div class="placeholder-content" *ngIf="!board.image">
-                    <span class="icon">✨</span>
-                    <h3>{{ board.title }}</h3>
-                    <p>Coming Soon...</p>
+            <div class="vision-grid">
+                <div class="vision-card" *ngFor="let board of visionBoards"
+                    [style.background-color]="board.placeholderColor">
+                    <button class="delete-btn" (click)="deleteBoard(board, $event)">×</button>
+
+                    <img *ngIf="board.image" [src]="board.image" [alt]="board.title" class="vision-image">
+
+                    <div class="placeholder-content" *ngIf="!board.image">
+                        <span class="icon">✨</span>
+                        <h3>{{ board.title }}</h3>
+                        <p>Coming Soon...</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bible Verses Section -->
-
         <!-- Birthday Promises Section -->
-        <div class="verses-container" *ngIf="activeTab === 'birthday'">
-            <div class="chapter-card" *ngFor="let verse of birthdayVerses" style="border-left-color: #ec407a;">
-                <h2 style="color: #d81b60;">🎈 {{ verse.theme }}</h2>
-                <div class="verse-highlight" style="background: #fff8e1;">
-                    <span class="verse-ref" style="color: #ff6f00;">{{ verse.ref }}</span>
-                    <p>"{{ verse.text }}"</p>
+        <div class="section-container" *ngIf="activeTab === 'birthday'">
+            <div class="action-bar">
+                <button class="add-btn" (click)="toggleVerseForm()">
+                    {{ showVerseForm ? 'Cancel' : '+ Add New Verse' }}
+                </button>
+            </div>
+
+            <!-- New Verse Form -->
+            <div class="form-card" *ngIf="showVerseForm">
+                <h3>Add New Verse 📖</h3>
+                <input [(ngModel)]="newVerse.ref" placeholder="Reference (e.g., Psalm 23)" class="form-input">
+                <input [(ngModel)]="newVerse.theme" placeholder="Theme (e.g., Comfort)" class="form-input">
+                <textarea [(ngModel)]="newVerse.text" placeholder="Verse Text" class="form-input" rows="3"></textarea>
+                <button class="submit-btn" (click)="addVerse()" [disabled]="!newVerse.text">Add Verse</button>
+            </div>
+
+            <div class="verses-container">
+                <div class="chapter-card" *ngFor="let verse of birthdayVerses" style="border-left-color: #ec407a;">
+                    <button class="delete-btn-verse" (click)="deleteVerse(verse, $event)">×</button>
+                    <h2 style="color: #d81b60;">🎈 {{ verse.theme }}</h2>
+                    <div class="verse-highlight" style="background: #fff8e1;">
+                        <span class="verse-ref" style="color: #ff6f00;">{{ verse.ref }}</span>
+                        <p>"{{ verse.text }}"</p>
+                    </div>
                 </div>
             </div>
         </div>
